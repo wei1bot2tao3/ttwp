@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>tt</title>
+  <link href="/layui/css/layui.css" rel="stylesheet">
+  <style>
+    .upload-container {
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      color: #555;
+      cursor: pointer;
+    }
+    .upload-container:hover {
+      background-color: #f7f7f7;
+    }
+    .upload-container i {
+      font-size: 48px;
+      margin-bottom: 10px;
+      color: #ccc;
+    }
+    .upload-container p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin " >
+  <!--上方导航-->
+  <div class="layui-header">
+    <div class="layui-logo layui-hide-xs layui-bg-black">tt网盘</div>
+    <!-- 头部区域（可配合layui 已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+      <!-- 移动端显示 -->
+      <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+        <i class="layui-icon layui-icon-spread-left"></i>
+      </li>
+      <li class="layui-nav-item layui-hide-xs"><a href="/user/index">文件首页</a></li>
+      <script>var token=localStorage.getItem('token')
+      </script>
+
+
+      <li class="layui-nav-item">
+      </li>
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+        <a href="javascript:;" id="username" style="color: seagreen" >
+          用户名
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="/user/info">个人首页</a></dd>
+          <dd><a href="/user/index">文件首页</a></dd>
+          <dd><a href="#" id="logout">退出登录</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+        <a href="javascript:;">
+          <i class="layui-icon layui-icon-more-vertical"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+  <div class="layui-side layui-bg-black ">
+    <div class="layui-side-scroll">
+      <ul class="layui-nav layui-nav-tree" lay-filter="test">
+        <li class="layui-nav-item layui-nav-itemed">
+
+          <a href="javascript:;" data-type="*" >我的文件
+            <i class="layui-icon layui-icon-down layui-nav-more">
+            </i>
+          </a>
+          <dl class="layui-nav-child">
+            <dd><a href="javascript:;" data-type="图片" >图片</a></dd>
+            <dd><a href="javascript:;" data-type="视频">视频</a></dd>
+            <dd><a href="javascript:;" data-type="音乐">音乐</a></dd>
+            <dd><a href="javascript:;" data-type="文档">文档</a></dd>
+            <dd><a href="javascript:;" data-type="其他">其他</a></dd>
+
+          </dl>
+        </li>
+        <li class="layui-nav-item">
+          <a href="javascript:;" data-type="recycle">回收站</a>
+        </li>
+      </ul>
+    </div>
+
+
+    </div>
+  <!--主体 -->
+  <div class="layui-body layui-col-md9 "  >
+    <!-- 内容主体区域 -->
+
+
+    <div style="padding: 15px;">
+      <!-- 在表格上方添加搜索框 -->
+      <div class="layui-container">
+        <div class="layui-card">
+          <div class="layui-card-header">我的文件</div>
+          <!-- 导航按钮-->
+          <div class="layui-form-item" style="display: flex; align-items: center; justify-content: space-between;">
+
+            <!-- 表格区域-->
+            <div style="display: flex; align-items: center;">
+              <div class="layui-inline">
+                <input class="layui-input" placeholder="请输入关键词" id="keyword">
+              </div>
+              <div class="layui-inline">
+                <button class="layui-btn" id="search">搜索</button>
+              </div>
+              <div class="layui-inline">
+                <button class="layui-btn" id="mkdir">新建文件夹</button>
+              </div>
+              <div class="layui-inline">
+                <button class="layui-btn" id="upfile">上传文件</button>
+              </div>
+            </div>
+          </div>
+          <table id="home" lay-filter="home"></table>
+
+
+
+
+        </div>
+      </div>
+    </div>
+
+    <!--侧边 按钮-->
+    <script type="text/html" id="barDemo">
+      <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="down">下载</a>
+      <a class="layui-btn layui-btn-xs layui-btn-danger " lay-event="edit">修改文件名</a>
+      <a class="layui-btn layui-btn-xs layui-btn-danger " lay-event="T0">删除</a>
+    </script>
+
+    <script type="text/html" id="bardya07">
+      <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="delete">彻底删除</a>
+      <a class="layui-btn layui-btn-xs layui-btn-danger " lay-event="T1">恢复</a>
+    </script>
+  </div>
+
+  <!-- 底部固定区域 -->
+  <div class="layui-footer">
+
+    底部固定区域
+  </div>
+  </div>
+
+
+
+<script src="/layui/check.js"></script>
+<script src="/layui/layui.js"></script>
+
+<!-- 头部表格js-->
+<script>
+  //JS
+  var username1=localStorage.getItem('username')
+  var token=localStorage.getItem('token')
+  //修改用户名
+  document.getElementById('username').innerHTML=username1;
+  layui.use(['element', 'layer', 'util'], function(){
+    var element = layui.element
+            ,layer = layui.layer
+            ,util = layui.util
+            ,$ = layui.$;
+
+    //头部事件
+
+    util.event('lay-header-event', {
+      //左侧菜单事件
+      menuLeft: function(othis){
+        layer.msg('展开左侧菜单的操作', {icon: 0});
+      }
+      ,menuRight: function(){
+        layer.open({
+          type: 1
+          ,content: '<div style="padding: 15px;">处理右侧面板的操作</div>'
+          ,area: ['260px', '100%']
+          ,offset: 'rt' //右上角
+          ,anim: 5
+          ,shadeClose: true
+        });
+      }
+    });
+// 获取退出登录链接元素
+    const logoutLink = document.getElementById('logout');
+    logoutLink.addEventListener('click', function() {
+      const xhr = new XMLHttpRequest();
+
+      xhr.open('POST', '/exit', true);
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+
+          if (response.code === 1) {
+            alert('退出登录成功' );
+            localStorage.removeItem('token');
+            window.location.href = '/';
+          } else {
+            alert('失败：');
+          }
+        }
+      };
+
+      const data = `username=${encodeURIComponent(username1)}&token=${encodeURIComponent(token)}`;
+      xhr.send(data);
+    });
+
+
+
+  });
+
+  //跳转模块
+
+  // 为上传按钮添加点击事件监听器
+
+  //各个图片跳转
+
+</script>
+
+<!-- 侧边表格js-->
+<script>
+  //文件导航
+  layui.use('element',function(){
+    var $ = layui. $
+    var table = layui.table;
+    //读取session 的用户名
+    var username1=localStorage.getItem('username')
+    //读取token
+
+    var token=localStorage.getItem('token')
+    var element = layui.element;
+    //监听左侧导航点击
+    element.on('nav(test)', function(elem){
+      //获取点击的菜单项的类型（图片/视频/音乐/文档/其他）
+      var type = $(elem).attr('data-type');
+      //进行相应的操作，例如重新加载表格数据
+      if( type ==="*"){
+        //window.location="/user/index"
+      }else if (type==="recycle"){
+        table.render({
+
+          elem: '#home'
+          ,url: '/file/day07?username='+username1+"&token="+token
+          ,cols: [[ //表头
+            {field: 'Filename', title: '文件名', width: '20%', sort: true,
+              templet: function (d) {
+                return '<a href="#" lay-event="open">'+d.Filename+'</a>';
+              }
+            }
+            ,{field: 'Filesize', title: '大小', width:"20%", sort: true}
+            ,{field: 'Filetype', title: '文件类型', width:"13%",sort: true}
+            ,{field: 'UpdatedAt', title: '修改时间',width:"25%",  sort: true}
+            // fixed 固定列 right 在右边 align 单元格排列方式 center
+            ,{fixed: 'right', title: '操作', width: '20%', align:'center', toolbar:'#bardya07'}
+
+          ]]
+          ,response: {
+            statusCode: 200//重新规定成功的状态码为 200，table 组件默认为 0
+          }
+          ,parseData: function(res){//res 即为原始返回的数据
+            //localStorage.setItem("token",res.token)
+            // 遍历数据列表并转换 "UpdatedAt" 字段的格式
+            res.data.forEach(function(item) {
+              var date = new Date(item.UpdatedAt);
+              item.UpdatedAt = date.getFullYear() + '-' +
+                      ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
+                      ('0' + date.getDate()).slice(-2) + ' ' +
+                      ('0' + date.getHours()).slice(-2) + ':' +
+                      ('0' + date.getMinutes()).slice(-2) + ':' +
+                      ('0' + date.getSeconds()).slice(-2);
+            });
+            return {
+              "code": res.code, //解析接口状态
+              "msg": res.msg, //解析提示文本
+              "count": res.total, //解析数据长度
+              "data": res.data, //解析数据列表
+            };
+          }
+          // 样式 无边框风格
+          ,skin:'line'
+          ,size: 'sm' //小尺寸的表格
+        });
+      } else {
+        table.render({
+          elem: '#home'
+          ,url: '/file/type?username='+username1+"&token="+token+"&type="+type
+          ,cols: [[ //表头
+            {field: 'Filename', title: '文件名', width: '20%', sort: true,
+              templet: function (d) {
+                return '<a href="#" lay-event="open">'+d.Filename+'</a>';
+              }
+            }
+            ,{field: 'Filesize', title: '大小', width:"20%", sort: true}
+            ,{field: 'Filetype', title: '文件类型', width:"13%",sort: true}
+            ,{field: 'UpdatedAt', title: '修改时间',width:"25%",  sort: true}
+            // fixed 固定列 right 在右边 align 单元格排列方式 center
+            ,{fixed: 'right', title: '操作', align:'center',width:"20%", toolbar: '#barDemo',fixed: 'right'}
+          ]]
+          ,response: {
+            statusCode: 200//重新规定成功的状态码为 200，table 组件默认为 0
+          }
+          ,parseData: function(res){//res 即为原始返回的数据
+            //localStorage.setItem("token",res.token)
+            // 遍历数据列表并转换 "UpdatedAt" 字段的格式
+            res.data.forEach(function(item) {
+              var date = new Date(item.UpdatedAt);
+              item.UpdatedAt = date.getFullYear() + '-' +
+                      ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
+                      ('0' + date.getDate()).slice(-2) + ' ' +
+                      ('0' + date.getHours()).slice(-2) + ':' +
+                      ('0' + date.getMinutes()).slice(-2) + ':' +
+                      ('0' + date.getSeconds()).slice(-2);
+            });
+            return {
+              "code": res.code, //解析接口状态
+              "msg": res.msg, //解析提示文本
+              "count": res.total, //解析数据长度
+              "data": res.data, //解析数据列表
+
+            };
+          }
+          // 样式 无边框风格
+          ,skin:'line'
+          ,size: 'sm' //小尺寸的表格
+        });
+      }
+      // 页面加载完毕时获取表格数据
+      table.reloadData('home', {
+        scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
+      });
+
+    });
+  });
+  //目录导航
+
+</script>
+
+<!-- 中间表格js-->
+<script>
+  layui.use('table', function (){
+    var $ = layui. $
+    var table = layui.table;
+    //读取session 的用户名
+    var username1=localStorage.getItem('username')
+    //读取token
+    var userid =localStorage.getItem('userid')
+    var token=localStorage.getItem('token')
+    var tree=localStorage.getItem('tree')
+    var parentid=localStorage.getItem('parentid')
+    table.render({
+      elem: '#home'
+      ,url: '/file/home?username='+username1+"&token="+token+"&tree="+tree //数据接口 发送用户名以及token
+      ,cols: [[ //表头
+        {field: 'Filename', title: '文件名', width:"20%", sort: true,
+          templet: function (d) {
+            return '<a href="#" lay-event="open">'+d.Filename+'</a>';
+          }
+        }
+        ,{field: 'Filesize', title: '大小', width:"20%", sort: true}
+        ,{field: 'Filetype', title: '文件类型', width:"13%",sort: true}
+        ,{field: 'UpdatedAt', title: '修改时间',width:"25%",  sort: true}
+        // fixed 固定列 right 在右边 align 单元格排列方式 center
+        ,{fixed: 'right', title: '操作', align:'center',width:"20%", toolbar: '#barDemo',fixed: 'right'}
+
+      ]]
+      ,response: {
+        statusCode: 200//重新规定成功的状态码为 200，table 组件默认为 0
+      }
+      ,parseData: function(res) {
+        localStorage.setItem("token", res.token)
+        localStorage.setItem("edtree", res.edtree)
+        tree = res.tree
+        localStorage.setItem("parentid", res.parentid)
+
+        // 遍历数据列表并转换 "UpdatedAt" 字段的格式
+        res.data.forEach(function(item) {
+          var date = new Date(item.UpdatedAt);
+          item.UpdatedAt = date.getFullYear() + '-' +
+                  ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
+                  ('0' + date.getDate()).slice(-2) + ' ' +
+                  ('0' + date.getHours()).slice(-2) + ':' +
+                  ('0' + date.getMinutes()).slice(-2) + ':' +
+                  ('0' + date.getSeconds()).slice(-2);
+        });
+
+        return {
+          "code": res.code,
+          "msg": res.msg,
+          "count": res.total,
+          "data": res.data,
+        };
+      }
+      // 样式 无边框风格
+      ,skin:'line'
+      ,size: 'sm' //小尺寸的表格
+
+
+    });
+    //刷新表格
+    function refreshTable(tree) {
+      layer.msg(tree);
+      table.reload('home', {
+        url: '/file/location?username='+username1+"&token="+token+"&tree="+tree,
+
+        done: function() {
+          $('#currentPath').text(tree);
+        }
+      });
+    }
+
+    //监听面包屑导航的点击事件
+    $('.layui-breadcrumb').on('click', 'a', function() {
+      var tree = $(this).text();
+      refreshTable(tree);
+    });
+
+    // 绑定搜索按钮点击事件
+    $('#search').on('click', function() {
+      var key = $('#keyword').val();
+
+      if (!key) {
+        layer.msg('请输入关键词');
+        return false;
+      }
+      table.render({
+        elem: '#home'
+
+        ,url: '/file/search?username='+username1+"&token="+token+"&key="+key//数据接口 发送用户名以及token
+        ,cols: [[ //表头
+          {field: 'Filename', title: '文件名', width: '20%', sort: true,
+            templet: function (d) {
+              return '<a href="#" lay-event="open">'+d.Filename+'</a>';
+            }
+          }
+          ,{field: 'Filesize', title: '大小', width:"20%", sort: true}
+          ,{field: 'Filetype', title: '文件类型', width:"13%",sort: true}
+          ,{field: 'UpdatedAt', title: '修改时间',width:"25%",  sort: true}
+          // fixed 固定列 right 在右边 align 单元格排列方式 center
+          ,{fixed: 'right', title: '操作', align:'center',width:"20%", toolbar: '#barDemo',fixed: 'right'}
+
+        ]]
+        ,response: {
+          statusCode: 200//重新规定成功的状态码为 200，table 组件默认为 0
+        }
+        ,parseData: function(res){//res 即为原始返回的数据
+          //localStorage.setItem("token",res.token)
+          // 遍历数据列表并转换 "UpdatedAt" 字段的格式
+          res.data.forEach(function(item) {
+            var date = new Date(item.UpdatedAt);
+            item.UpdatedAt = date.getFullYear() + '-' +
+                    ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
+                    ('0' + date.getDate()).slice(-2) + ' ' +
+                    ('0' + date.getHours()).slice(-2) + ':' +
+                    ('0' + date.getMinutes()).slice(-2) + ':' +
+                    ('0' + date.getSeconds()).slice(-2);
+          });
+          return {
+            "code": res.code, //解析接口状态
+            "msg": res.msg, //解析提示文本
+            "count": res.total, //解析数据长度
+            "data": res.data, //解析数据列表
+            //"data":res.name = res.type === 'folder' ? '<a href="#">' + res.name + '</a>' : '<input type="text" value="' + res.name + '">'
+
+          };
+        }
+        // 样式 无边框风格
+        ,skin:'line'
+        ,size: 'sm' //小尺寸的表格
+      });
+      // 页面加载完毕时获取表格数据
+      table.reloadData('home', {
+        scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
+      });
+    });
+    //创建文件夹
+    $('#mkdir').on('click', function() {
+      parentid=localStorage.getItem('parentid')
+      layer.prompt({title: '请输入文件名：'}, function (value, index) {
+        layer.close(index);
+        $.ajax({
+          url: '/file/tree/mkdir?username='+username1+"&token="+token+"&maketree="+value+"&tree="+tree+"&parentid="+parentid+"&userid="+userid,
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({fileName: value}),
+          success: function (data) {
+            // 处理服务器响应 刷新当前数据表格
+            //
+            if (data.ok=="ok"){
+              table.reloadData('home', {
+                scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
+              });
+
+            }
+          },
+          error: function (xhr, status, error) {
+            // 处理请求错误
+          }
+        });
+      });
+    });
+    //上传文件
+    $('#upfile').on('click', function() {
+     alert("准备跳转到上传页面")
+      window.location.href='/file/upfile?token='+token;
+
+    });
+
+    //处理侧边按钮 barDemo
+    // 单元格工具事件
+    //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"home
+    table.on('tool(home)', function(obj){ // 双击 toolDouble
+      var data = obj.data; //获得当前行数据
+      //var rowIndex = $(obj.tr).attr('data-index');//获取当前的索引
+
+      //回收站
+      if(obj.event === 'T0'){
+        layer.confirm('要放入回收站吗？', function(index){
+          // obj.del(); // 删除对应行（tr）的 DOM 结构，并更新缓存
+
+          //删除接口
+          var $ = layui. $
+          $.ajax({
+            url:"/file/day07/0?token="+token,
+            type:"post",
+            data:{
+              username:username1,
+              Filehash: data.Filehash,
+              Filelocation: data.Filelocation,
+              Filename:data.Filename,
+              userid:userid,
+            },
+            dataType:"json",
+            success:function(result){
+              if (result.success) {
+                //obj.del();
+                layer.alert(result.message,{icon:1});
+                //刷新表格
+              } else {
+                layer.alert(result.message,{icon:2})
+              }
+            }
+          });
+          //关闭当前行，把该行的下标索引给他
+          layer.close(index);
+          // 可通过 reloadData 方法完成数据重载
+          obj.del();
+          obj.deleteRow();
+          table.reloadData('home', {
+            scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
+          });
+          //location.reload();
+
+
+        });
+      }
+      //下载文件
+      else if(obj.event==='down'){
+        if(data.Filetype==='wjj'){
+          alert("对不起暂时不支持下载文件夹")
+        }else {
+          layui.use('layer', function(){
+            var layer = layui.layer;
+            layer.confirm('请选择下载方式', {
+              btn: ['直接下载','生成链接'] //按钮
+            }, function(){
+              var data = obj.data
+              var $ = layui. $
+              $.ajax({
+                url: "/file/down?token="+token,
+                method: "post",
+                data: {
+                  username: username1,
+                  Filehash: data.Filehash,
+                  Filelocation: data.Filelocation,
+                  parent: data.Parent,
+                  userid:userid,
+                },
+                dataType: "json",
+
+                success: function(result) {
+                  if (result.code === 200 || true) {
+                    // 弹出一个弹窗
+                    var link = document.createElement('a');
+                    link.setAttribute('href', result.url);
+                    link.setAttribute('download', ''); // 设置下载属性为true
+                    document.body.appendChild(link);
+                    link.click(); // 模拟用户点击
+                    document.body.removeChild(link); // 删除<a>标签
+                  }
+
+                }
+              });
+
+            }, function(){
+              // 生成下载链接
+              var data = obj.data
+              var $ = layui. $
+              $.ajax({
+                url: "/file/down?token="+token,
+                method: "post",
+                data: {
+                  username: username1,
+                  Filehash: data.Filehash,
+                  Filelocation: data.Filelocation,
+                  parent: data.Parent,
+                  userid:userid,
+                },
+                dataType: "json",
+
+                success: function(result) {
+                  if (result.code === 200 || true) {
+                    // 弹出一个弹窗
+                    layer.open({
+                      title: '下载链接已生成',
+                      content: '请复制链接进行下载：<br>' + result.url,
+                      btn: ['复制链接'],
+                      yes: function(index, layero) {
+                        // 复制链接
+                        var input = document.createElement('input');
+                        input.setAttribute('value', result.url);
+                        document.body.appendChild(input);
+                        input.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(input);
+                        layer.msg('链接已复制到剪贴板');
+                      }
+                    });
+                  }
+                }
+              });
+
+            });
+          });
+
+
+        }
+      }
+      //修改文件
+      else if(obj.event==='edit'){
+        layui.use('layer', function(){
+          var layer = layui.layer;
+          layer.prompt({title: '请输入新的文件名', formType: 0,}, function(newFileName, index){
+            // 这里可以将新的文件名发送到后端进行处理
+            var data = obj.data
+            var $ = layui. $
+            $.ajax({
+              url:"/file/edit?token="+token,
+              method:"post",
+
+              data:{
+                username:username1,
+                Filehash: data.Filehash,
+                Filelocation: data.Filelocation,
+                Filenewname:newFileName,
+                parent:data.Parent,
+                userid:userid,
+
+              },
+              dataType:"json",
+              success:function(result){
+                if (result.code===200) {
+                  layer.alert('修改成功');
+                  //更新表格数据
+                  obj.update({
+                    Filename: newFileName
+                  });
+
+
+                } else {
+                  layer.alert(请稍后重试)
+                }
+              }
+            });
+            layer.close(index);
+            //location.reload();
+          });
+        });
+      }
+      //打开文件
+      else if(obj.event==='open'){
+        var type=data.Filetype
+        var $ = layui. $
+        var folder = {
+          name: '文件夹名称',
+          fileid:0,
+        };
+
+        if (type==="文件夹"){
+          var toloaction=data.Fileid
+          var parentname=data.Filename
+          table.render({
+            elem: '#home'
+
+            // to he当前
+            ,url: '/file/tree/tolocation?username='+username1+"&token="+token+"&tolocation="+toloaction+"&tree="+tree+"&parentname="+parentname //数据接口 发送用户名以及token
+            ,cols: [[ //表头
+              {field: 'Filename', title: '文件名', width: '20%', sort: true,
+                templet: function (d) {
+                  return '<a href="#" lay-event="open">'+d.Filename+'</a>';
+                }
+              }
+              ,{field: 'Filesize', title: '大小', width:"20%", sort: true}
+              ,{field: 'Filetype', title: '文件类型', width:"13%",sort: true}
+              ,{field: 'UpdatedAt', title: '修改时间',width:"25%",  sort: true}
+              // fixed 固定列 right 在右边 align 单元格排列方式 center
+              ,{fixed: 'right', title: '操作', align:'center',width:"20%", toolbar: '#barDemo',fixed: 'right'}
+
+            ]]
+            ,response: {
+              statusCode: 200//重新规定成功的状态码为 200，table 组件默认为 0
+            }
+            ,parseData: function(res){//res 即为原始返回的数据
+              // 遍历数据列表并转换 "UpdatedAt" 字段的格式
+              res.data.forEach(function(item) {
+                var date = new Date(item.UpdatedAt);
+                item.UpdatedAt = date.getFullYear() + '-' +
+                        ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
+                        ('0' + date.getDate()).slice(-2) + ' ' +
+                        ('0' + date.getHours()).slice(-2) + ':' +
+                        ('0' + date.getMinutes()).slice(-2) + ':' +
+                        ('0' + date.getSeconds()).slice(-2);
+              });
+              localStorage.setItem("token",res.token)
+              localStorage.setItem("edlocation",res.edlocation)
+              localStorage.setItem("token",res.token)
+              localStorage.setItem("edtree",res.edtree)
+              tree=res.tree
+              localStorage.setItem("parentid",res.parentid)
+              alert("前往文件夹"+parentname)
+              folder.name=res.tree
+              return {
+                "code": res.code, //解析接口状态
+                "msg": res.msg, //解析提示文本
+                "count": res.total, //解析数据长度
+                "data": res.data, //解析数据列表
+
+              };
+            }
+            // 样式 无边框风格
+            ,skin:'line'
+            ,size: 'sm' //小尺寸的表格
+            ,done: function() {
+              // 更新面包屑导航
+              var breadcrumbHtml = '<a href="#">home</a>';
+              var treeArray = tree.split('/');
+
+              for (var i = 0; i < treeArray.length; i++) {
+                if (treeArray[i]) {
+                  breadcrumbHtml += '<span lay-separator="">/</span><a href="#">' + treeArray[i] + '</a>';
+                }
+              }
+              $('.layui-breadcrumb').html(breadcrumbHtml);
+            }
+
+
+          });
+
+
+        }else {
+          layer.msg("暂时不支持打开此类型文件")
+        }
+      }
+      if(obj.event === 'delete'){
+          if(data.Filetype==='wjj'){
+            layer.confirm('请注意这会删除当前目录下所有文件', function(index){
+
+              //删除接口
+              var $ = layui. $
+              $.ajax({
+                url:"/file/delete?token="+token,
+                type:"post",
+                data:{
+                  username:username1,
+                  Filehash: data.Filehash,
+                  Filelocation: data.Filelocation,
+                  Filename:data.Filename,
+                  userid:userid,
+                },
+                dataType:"json",
+                success:function(result){
+                  if (result.success) {
+                    //obj.del();
+                    layer.alert(result.message,{icon:1});
+                    //刷新表格
+                  } else {
+                    layer.alert(result.message,{icon:2})
+                  }
+                }
+              });
+              //关闭当前行，把该行的下标索引给他
+              layer.close(index);
+              // 可通过 reloadData 方法完成数据重载
+              obj.del();
+              obj.deleteRow();
+              table.reloadData('home', {
+                scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
+              });
+              //location.reload();
+
+
+            });
+          }else {
+            layer.confirm('真的永久删除么', function(index){
+
+              //删除接口
+              var $ = layui. $
+              $.ajax({
+                url:"/file/delete?token="+token,
+                type:"post",
+                data:{
+                  username:username1,
+                  Filehash: data.Filehash,
+                  Filelocation: data.Filelocation,
+                  Filename:data.Filename,
+                  userid:userid,
+                },
+                dataType:"json",
+                success:function(result){
+                  if (result.success) {
+                    //obj.del();
+                    layer.alert(result.message,{icon:1});
+                    //刷新表格
+                  } else {
+                    layer.alert(result.message,{icon:2})
+                  }
+                }
+              });
+              //关闭当前行，把该行的下标索引给他
+              layer.close(index);
+              // 可通过 reloadData 方法完成数据重载
+              obj.del();
+              obj.deleteRow();
+              table.reloadData('home', {
+                scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
+              });
+              //location.reload();
+
+
+            });
+          }
+      }
+      if(obj.event === 'T1'){
+        layer.confirm('要恢复文件吗？', function(index){
+          // obj.del(); // 删除对应行（tr）的 DOM 结构，并更新缓存
+
+          //恢复
+          var $ = layui. $
+          $.ajax({
+            url:"/file/day07/1?token="+token,
+            type:"post",
+            data:{
+              username:username1,
+              Filehash: data.Filehash,
+              Filelocation: data.Filelocation,
+              Filename:data.Filename,
+              userid:userid,
+            },
+            dataType:"json",
+            success:function(result){
+              if (result.success) {
+                //obj.del();
+                layer.alert(result.message,{icon:1});
+                //刷新表格
+              } else {
+                layer.alert(result.message,{icon:2})
+              }
+            }
+          });
+          //关闭当前行，把该行的下标索引给他
+          layer.close(index);
+          // 可通过 reloadData 方法完成数据重载
+          obj.del();
+          obj.deleteRow();
+          table.reloadData('home', {
+            scrollPos: 'fixed'  // 保持滚动条位置不变 - v2.7.3 新增
+          });
+          //location.reload();
+
+
+        });
+      }
+
+    });
+
+
+
+
+
+
+  });
+</script>
+
+
+
+</body>
+</html>

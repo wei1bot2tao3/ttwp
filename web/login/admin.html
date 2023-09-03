@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>login</title>
+    <link href="/layui/css/layui.css" rel="stylesheet">
+    <style>
+        body{
+            background-image: url("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1576686661155&di=979f715560fa7ad316c42b4b15e8d702&imgtype=0&src=http%3A%2F%2F00.minipic.eastday.com%2F20171011%2F20171011134244_ba2764b9a42cd878ce93ab37fd08e3e5_2.jpeg");
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .loginForm{
+            width: 350px;
+            height: 300px;
+            background-color: white;
+            padding: 30px 20px;
+            margin-top: 50%;
+            border-radius: 5px;
+            box-shadow: 0 0 5px black;
+            box-sizing: border-box;
+        }
+    </style>
+    <script src="/layui/layui.js"></script>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-row">
+        <div class="layui-col-md4 layui-col-md-offset4">
+            <div class="loginForm">
+                <h2 align="center">登录</h2>
+
+                <form  class="layui-form" method="post"  >
+                    <input id="username" name="username" placeholder="用户名"  type="text" lay-verify="required" class="layui-input" >
+                    <hr class="hr15">
+                    <input id="password" name="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input" value="123456">
+                    <hr class="hr15">
+
+                    <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="button">
+                    <hr class="hr20" >
+                    <a href="/user/register">注册</a>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/layui/layui.js"></script>
+<script>
+    // 进行登录操作
+    layui.use(['form', 'layer','jquery'],
+        function(){
+            $ = layui.jquery;
+            var form = layui.form,
+                layer = layui.layer;
+            //监听提交
+            form.on('submit(login)',
+                function(data){
+                    var useranme=document.getElementById("username").value;
+                    var password=document.getElementById("password").value;
+
+                    //发异步，把数据提交给后端
+                    $.ajax({
+                        url: "/user/login",
+                        data:{
+                            username:useranme,
+                            password:password,
+
+                        },
+                        type:"Post",
+                        dataType:"json",
+
+
+                        success:function(body){
+                            if (body.result=="success"){
+                                //存储session
+                                localStorage.setItem("username",body.username)
+                                localStorage.setItem("token",body.token)
+                                localStorage.setItem("tree",body.tree)
+                                var token=localStorage.getItem('token')
+                                //保存token
+                                // sessionStorage.setItem('token', token);
+                                //sessionStorage.setItem('tree', body.tree);
+                                //判断跳转
+                                layer.confirm('欢迎您'+body.username, {
+                                    btn: ['确定'] //可以无限个按钮
+                                    ,btn3: function(index, layero){
+                                        //按钮【按钮三】的回调
+                                    }
+                                }, function(index, layero){
+                                    location.href="/admin/index?username=?"+useranme+"&token=?"+token;
+                                    //按钮【按钮一】的回调
+                                }, function(index){
+                                    //按钮【按钮二】的回调
+                                });
+
+                            }else {
+                                alert("对不起密码或用户名不正确")
+                            }
+                        }
+                    });
+                });
+        });
+
+
+</script>
+</body>
+</html>

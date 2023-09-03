@@ -1,0 +1,295 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>用户信息</title>
+    <link href="/layui/css/layui.css" rel="stylesheet">
+    <script src="/layui/node_modules/chart.js/dist/chart.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <!--上方导航-->
+    <div class="layui-header">
+        <div class="layui-logo layui-hide-xs layui-bg-black">TT网盘</div>
+        <!-- 头部区域（可配合layui 已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <!-- 移动端显示 -->
+            <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+                <i class="layui-icon layui-icon-spread-left"></i>
+            </li>
+            <li class="layui-nav-item layui-hide-xs"><a href="/admin/index">管理员首页</a></li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;"  style="color: seagreen" >
+                    用户名
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/admin/index">个人首页</a></dd>
+                    <dd><a href="">退出登录</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-more-vertical"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- 左侧导航区域 -->
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+
+                    <a href="javascript:;">个人信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/admin/user/info">修改信息</a></dd>
+                        <dd><a href="/admin/user/password">修改密码</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">用户管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;" data-type="user">普通用户</a></dd>
+                        <dd><a href="javascript:;" data-type="admin">管理员</a></dd>
+                        <dd><a href="javascript:;" data-type="xhw">小黑屋</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="/admin/history">历史记录</a>
+                </li>
+
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">服务器管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/admin/k8s" data-type="linux">监控服务</a></dd>
+                    </dl>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <!-- 主体区域 -->
+
+
+    <div class="layui-body layui-col-md12 "  >
+        <!-- 内容主体区域 -->
+
+        <div style="padding: 15px;">
+
+
+            <div class="layui-row layui-col-space15">
+                <!--cpu -->
+                <div class="layui-col-md2" id="cpu1">
+                    <div class="layui-card">
+                        <div class="layui-card-header">总 CPU 使用率</div>
+                        <div class="chart-container">
+                            <canvas id="myChartcpu"></canvas>
+                        </div>
+                        <div class="layui-card-body">
+                            <button id="btn">显示全部</button>
+                        </div>
+                        <div class="layui-card-body">
+                            <button id="sx">刷新</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- free -->
+                <div class="layui-col-md2" id="free">
+                    <div class="layui-card">
+                        <div class="layui-card-header">总 内存 使用率</div>
+                        <div class="chart-container">
+                            <canvas id="myChartfree"></canvas>
+                        </div>
+                        <div class="layui-card-body">
+                            <button id="free-btn">显示全部</button>
+                        </div>
+                        <div class="layui-card-body">
+                            <button id="free-sx">刷新</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 磁盘 -->
+                <div class="layui-col-md2" id="df">
+                    <div class="layui-card">
+                        <div class="layui-card-header">腾讯OSS使用率</div>
+                        <div class="chart-container">
+                            <canvas id="myChartoss"></canvas>
+                        </div>
+                        <div class="layui-card-body">
+                            <button id="df-sx">刷新</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 这里放div的内容 -->
+            </div>
+
+            <!-- 以上是内存使用率的卡片，以下是CPU使用率和存储容量的卡片 -->
+        </div>
+        <div>
+            <div class="layui-col-md6" id="cpugroup" style="display:none;">
+                <!-- 这里放div的内容 -->
+                <div class="layui-row">
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">web1 CPU使用率</div>
+                            <div class="chart-container">
+                                <canvas id="cpuweb1"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">node1 CPU使用率</div>
+                            <div class="chart-container">
+                                <canvas id="cpunode1"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">node2 CPU使用率</div>
+                            <div class="chart-container">
+                                <canvas id="cpunode2"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="hideBtn-cpu">隐藏</button>
+            </div>
+            <div class="layui-col-md6" id="freegroup" style="display:none;">
+                <!-- 这里放div的内容 -->
+                <div class="layui-row">
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">web1 内存使用率</div>
+                            <div class="chart-container">
+                                <canvas id="freeweb1"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">node1 内存使用率</div>
+                            <div class="chart-container">
+                                <canvas id="freenode1"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4">
+                        <div class="layui-card">
+                            <div class="layui-card-header">node3 内存使用率</div>
+                            <div class="chart-container">
+                                <canvas id="freenode2"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="hideBtn-free">隐藏</button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- 底部固定区域 -->
+    <div class="layui-footer">
+        有问题联系：bjhlgebt@163.com
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<script src="/layui/layui.js"></script>
+
+<script>
+    //ajax 循环 取值赋值刷新
+    // 定时器，每隔5秒钟请求一次API获取最新的数据
+    // 封装ajax请求的函数
+
+    layui.use(['layer', 'form'], function(){
+        function refreshData() {
+            $.ajax({
+                url: '/admin/ks8list',
+                method: 'GET',
+                success: function(response) {
+                    // 根据返回的数据更新图表
+                    myChartcpu.data.datasets[0].data = response.data;
+                    cpuweb1.data.datasets[0].data = response.data;
+                    cpunode1.data.datasets[0].data = response.data;
+                    cppunode2.data.datasets[0].data = response.data;
+                    myCharfree.data.datasets[0].data = response.data;
+                    freeweb1.data.datasets[0].data = response.data;
+                    freenode1.data.datasets[0].data = response.data;
+                    freeunode2.data.datasets[0].data = response.data;
+                    myChartoss.data.datasets[0].data = response.data;
+
+
+                    // 更新图表
+                    myChart1.update();
+                    myChart2.update();
+                    myChart3.update();
+                    myChart4.update();
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        // 绑定刷新按钮的点击事件
+        var sxBtn = document.getElementById("sx");
+        sxBtn.onclick = function() {
+            refreshData(); // 调用刷新函数
+        };
+    });
+
+
+
+
+</script>
+
+<script>
+    // 显示第二个div按钮点击事件
+    document.getElementById("btn").addEventListener("click", function() {
+        document.getElementById("cpugroup").style.display = "block";
+    });
+
+    document.getElementById("free-btn").addEventListener("click", function() {
+        document.getElementById("freegroup").style.display = "block";
+    });
+
+
+
+    // 隐藏按钮点击事件
+    document.getElementById("hideBtn-cpu").addEventListener("click", function() {
+        document.getElementById("cpugroup").style.display = "none";
+    });
+
+    document.getElementById("hideBtn-free").addEventListener("click", function() {
+        document.getElementById("freegroup").style.display = "none";
+    });
+
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>
